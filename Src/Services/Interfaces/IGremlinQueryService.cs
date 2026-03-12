@@ -1,6 +1,6 @@
-using Gremlinq.Models;
+using GremlinQ.Models;
 
-namespace Gremlinq.Services.Interfaces;
+namespace GremlinQ.Services.Interfaces;
 
 public interface IGremlinQueryService
 {

@@ -1,9 +1,9 @@
 using System.Windows;
-using Gremlinq.Layout;
-using Gremlinq.Rendering;
-using Gremlinq.Services;
+using GremlinQ.Layout;
+using GremlinQ.Rendering;
+using GremlinQ.Services;
 
-namespace Gremlinq;
+namespace GremlinQ;
 
 /// <summary>Application entry point — wires all dependencies and creates the main window.</summary>
 public partial class App : Application

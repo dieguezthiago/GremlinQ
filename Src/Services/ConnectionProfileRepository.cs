@@ -1,8 +1,8 @@
 using System.IO;
 using System.Text.Json;
-using Gremlinq.Services.Interfaces;
+using GremlinQ.Services.Interfaces;
 
-namespace Gremlinq.Services;
+namespace GremlinQ.Services;
 
 /// <summary>Loads and sorts <see cref="ConnectionProfile" /> instances from the connections folder.</summary>
 public sealed class ConnectionProfileRepository : IConnectionProfileRepository

@@ -1,8 +1,8 @@
 using System.Windows.Controls;
 using System.Windows.Media;
-using Gremlinq.Models;
+using GremlinQ.Models;
 
-namespace Gremlinq.Rendering;
+namespace GremlinQ.Rendering;
 
 /// <summary>
 ///     Renders the Relations tab mini-graph: source vertex in the centre,

@@ -1,6 +1,6 @@
 using System.Windows.Media;
 
-namespace Gremlinq.Rendering;
+namespace GremlinQ.Rendering;
 
 /// <summary>VS Code–inspired dark-theme colour palette for graph rendering.</summary>
 public sealed class DefaultColorPalette : IColorPalette

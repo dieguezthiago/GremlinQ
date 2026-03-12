@@ -1,6 +1,6 @@
-using Gremlinq.Models;
+using GremlinQ.Models;
 
-namespace Gremlinq.Rendering;
+namespace GremlinQ.Rendering;
 
 /// <summary>All data the <see cref="RelationsCanvasRenderer" /> needs to produce a single frame.</summary>
 public sealed record RelationsRenderContext(

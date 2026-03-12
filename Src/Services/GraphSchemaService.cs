@@ -1,8 +1,8 @@
 using System.Text.Json;
-using Gremlinq.Models;
-using Gremlinq.Services.Interfaces;
+using GremlinQ.Models;
+using GremlinQ.Services.Interfaces;
 
-namespace Gremlinq.Services;
+namespace GremlinQ.Services;
 
 /// <summary>
 ///     Queries the Gremlin server for schema-level information: vertex types, edge types,

@@ -1,6 +1,6 @@
-using Gremlinq.Models;
+using GremlinQ.Models;
 
-namespace Gremlinq.Layout;
+namespace GremlinQ.Layout;
 
 /// <summary>
 ///     Places graph nodes using a force-directed simulation:

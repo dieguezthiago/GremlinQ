@@ -1,4 +1,4 @@
-namespace Gremlinq.Services.Interfaces;
+namespace GremlinQ.Services.Interfaces;
 
 public interface IGremlinConnectionService
 {

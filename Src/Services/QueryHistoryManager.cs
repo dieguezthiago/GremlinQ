@@ -1,7 +1,7 @@
-using Gremlinq.Models;
-using Gremlinq.Services.Interfaces;
+using GremlinQ.Models;
+using GremlinQ.Services.Interfaces;
 
-namespace Gremlinq.Services;
+namespace GremlinQ.Services;
 
 /// <summary>Maintains a bounded, deduplicated LIFO history of executed queries.</summary>
 public sealed class QueryHistoryManager : IQueryHistoryManager

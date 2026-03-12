@@ -3,10 +3,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using Gremlinq.Models;
+using GremlinQ.Models;
 using WpfPath = System.Windows.Shapes.Path;
 
-namespace Gremlinq.Rendering;
+namespace GremlinQ.Rendering;
 
 /// <summary>
 ///     Low-level WPF drawing primitives (edges, self-loops, nodes) shared by both canvas renderers.
