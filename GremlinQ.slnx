@@ -5,6 +5,7 @@
   </Folder>
   <Project Path="Src/GremlinQ.Core/GremlinQ.Core.csproj" />
   <Folder Name="/_Solution Items/">
+    <File Path=".gitignore" />
     <File Path="CLAUDE.md" />
   </Folder>
   <Project Path="Src/GremlinQ.App/GremlinQ.App.csproj" />

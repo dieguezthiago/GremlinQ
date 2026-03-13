@@ -9,7 +9,7 @@
 
 .idea/
 **/.idea/
-.claude/
+settings.local.json
 
 # Build results
 [Dd]ebug/
