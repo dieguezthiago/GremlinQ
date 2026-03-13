@@ -6,6 +6,9 @@
   <Project Path="Src/GremlinQ.Core/GremlinQ.Core.csproj" />
   <Folder Name="/_Solution Items/">
     <File Path=".gitignore" />
+  </Folder>
+  <Folder Name="/_Solution Items/Claude/">
+    <File Path=".claude/settings.json" />
     <File Path="CLAUDE.md" />
   </Folder>
   <Project Path="Src/GremlinQ.App/GremlinQ.App.csproj" />
