@@ -1,5 +1,5 @@
-using GremlinQ.Models;
-using GremlinQ.Services.Interfaces;
+using GremlinQ.Core.Models;
+using GremlinQ.Core.Services;
 
 namespace GremlinQ.Services;
 

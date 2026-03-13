@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using GremlinQ.Models;
-using GremlinQ.Services.Interfaces;
+using GremlinQ.Core.Models;
+using GremlinQ.Core.Services;
 
-namespace GremlinQ.Services;
+namespace GremlinQ.Infrastructure.Services;
 
 /// <summary>Executes Gremlin queries and returns timed, serialisable results.</summary>
 public sealed class GremlinQueryService : IGremlinQueryService

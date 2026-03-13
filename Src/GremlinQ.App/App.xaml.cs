@@ -1,8 +1,9 @@
 using System.Windows;
+using GremlinQ.Core.Services;
+using GremlinQ.Infrastructure.Services;
+using GremlinQ.Services;
 using GremlinQ.Layout;
 using GremlinQ.Rendering;
-using GremlinQ.Services;
-using GremlinQ.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GremlinQ;

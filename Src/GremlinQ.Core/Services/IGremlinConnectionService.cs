@@ -1,4 +1,6 @@
-namespace GremlinQ.Services.Interfaces;
+using GremlinQ.Core.Models;
+
+namespace GremlinQ.Core.Services;
 
 public interface IGremlinConnectionService
 {

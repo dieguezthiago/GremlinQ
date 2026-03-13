@@ -1,4 +1,4 @@
-namespace GremlinQ.Models;
+namespace GremlinQ.Core.Models;
 
 /// <summary>Result returned by a Gremlin query execution.</summary>
 public sealed record QueryResult(

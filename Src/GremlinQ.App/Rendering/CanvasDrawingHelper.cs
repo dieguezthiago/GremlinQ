@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using GremlinQ.Models;
+using GremlinQ.Core.Models;
 using WpfPath = System.Windows.Shapes.Path;
 
 namespace GremlinQ.Rendering;

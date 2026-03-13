@@ -1,7 +1,8 @@
 using Gremlin.Net.Driver;
-using GremlinQ.Services.Interfaces;
+using GremlinQ.Core.Models;
+using GremlinQ.Core.Services;
 
-namespace GremlinQ.Services;
+namespace GremlinQ.Infrastructure.Services;
 
 /// <summary>Manages the lifecycle of a <see cref="GremlinClient" /> connection.</summary>
 public sealed class GremlinConnectionService : IGremlinConnectionService, IDisposable

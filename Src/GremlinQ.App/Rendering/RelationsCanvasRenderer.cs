@@ -1,6 +1,6 @@
 using System.Windows.Controls;
 using System.Windows.Media;
-using GremlinQ.Models;
+using GremlinQ.Core.Models;
 
 namespace GremlinQ.Rendering;
 

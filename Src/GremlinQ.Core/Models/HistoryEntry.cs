@@ -1,4 +1,4 @@
-namespace GremlinQ.Models;
+namespace GremlinQ.Core.Models;
 
 public sealed record HistoryEntry(string Query)
 {

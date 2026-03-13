@@ -25,27 +25,38 @@ GremlinQ is a WPF desktop app (net10.0-windows) for exploring Azure Cosmos DB gr
 
 ```
 Src/
-  GremlinQ.App/       — WPF frontend + all current business logic
-  GremlinQ.Core/      — empty; intended for domain abstractions
-  GremlinQ.Infrastructure/ — empty; depends on Core; intended for Gremlin client wrappers
+  GremlinQ.Core/             — domain models + service interfaces (no dependencies)
+    Models/                  — ConnectionProfile, GraphSchema, GraphSchemaEdge, VertexItem,
+                               EdgeLabelItem, QueryResult, HistoryEntry
+    Services/                — IGremlinConnectionService, IGremlinQueryService,
+                               IGraphSchemaService, IConnectionProfileRepository, IQueryHistoryManager
+  GremlinQ.Infrastructure/   — service implementations + Gremlin client wrappers (depends on Core)
+    Services/                — GremlinConnectionService, GremlinQueryService, GraphSchemaService,
+                               ConnectionProfileRepository
+    CosmosDbMessageSerializer.cs
+  GremlinQ.App/              — WPF frontend (depends on Core + Infrastructure)
+    Models/GraphNode.cs      — mutable layout node (X/Y/Fx/Fy), UI-only
+    Services/QueryHistoryManager.cs — pure in-memory app state
+    Rendering/               — GraphCanvasRenderer, RelationsCanvasRenderer, CanvasDrawingHelper
+    Layout/                  — ForceDirectedLayoutEngine
 Tests/
   GremlinQ.Core.Tests/
   GremlinQ.Infrastructure.Tests/
 ```
 
-`GremlinQ.Core` and `GremlinQ.Infrastructure` are placeholders — the current logic lives entirely in `GremlinQ.App`. Future work should migrate services and models there.
+Dependency rule: App → Infrastructure → Core (nothing points back up).
 
-### Layers inside GremlinQ.App
+### Layer responsibilities
 
-- **Services** — all business logic behind interfaces (`IGremlinConnectionService`, `IGremlinQueryService`, `IGraphSchemaService`, `IConnectionProfileRepository`, `IQueryHistoryManager`). All registered as singletons in `App.xaml.cs`.
-- **Models** — plain records/classes: `GraphNode`, `GraphSchema`, `GraphSchemaEdge`, `VertexItem`, `EdgeLabelItem`, `QueryResult`, `HistoryEntry`.
-- **Rendering** — `GraphCanvasRenderer` (full schema graph), `RelationsCanvasRenderer` (focused vertex relations), `CanvasDrawingHelper` (WPF primitives). Edge colors are deterministic: labels sorted alphabetically, cycled through 8 fixed colors.
-- **Layout** — `ForceDirectedLayoutEngine`: circular init → 250 iterations of repulsion/spring/gravity with cooling; parameters scale with node count.
-- **MainWindow** — single large code-behind that coordinates all UI state; intentionally not MVVM for this PoC.
+- **Core** — domain value types and service contracts. No external dependencies.
+- **Infrastructure** — Gremlin.Net client, Cosmos DB serialization, JSON profile loading. Owns the `Gremlin.Net` NuGet reference.
+- **App** — WPF UI, DI composition root (`App.xaml.cs`), rendering, force-directed layout. All services registered as singletons.
 
 ### Key technical details
 
-**Azure Cosmos DB GraphSON2 quirk** — `CosmosDbGraphSON2Reader` is a custom `IMessageSerializer` that tolerates bare JSON numbers as vertex IDs, which the standard Gremlin.Net serializer rejects.
+**Azure Cosmos DB GraphSON2 quirk** — `CosmosDbMessageSerializer` is a custom `IMessageSerializer` that tolerates bare JSON numbers as vertex IDs, which the standard Gremlin.Net serializer rejects.
+
+**GraphSchema.Nodes type** — `IReadOnlyList<VertexItem>` (domain type). `MainWindow.LoadGraphAsync()` maps these to `GraphNode` instances for the layout engine.
 
 **Gremlin query safety** — `VertexItem.GremlinRef` and `EdgeLabelItem.GremlinRef` escape single quotes before interpolating labels into Gremlin traversals. Always use these properties, not `Label` directly.
 

@@ -3,10 +3,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using GremlinQ.Core.Models;
+using GremlinQ.Core.Services;
 using GremlinQ.Layout;
 using GremlinQ.Models;
 using GremlinQ.Rendering;
-using GremlinQ.Services.Interfaces;
 using Path = System.IO.Path;
 
 namespace GremlinQ;
@@ -540,7 +541,7 @@ public partial class MainWindow : Window
         {
             var schema = await _schemaService.LoadFullSchemaAsync();
 
-            _graphNodes.AddRange(schema.Nodes);
+            _graphNodes.AddRange(schema.Nodes.Select(v => new GraphNode(v.Label)));
             _graphEdges.AddRange(schema.Edges);
 
             var w = GraphCanvas.ActualWidth > 50 ? GraphCanvas.ActualWidth : 900;

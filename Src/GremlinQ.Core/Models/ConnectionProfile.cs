@@ -1,4 +1,4 @@
-namespace GremlinQ;
+namespace GremlinQ.Core.Models;
 
 /// <summary>Represents the connection settings for a single Azure Cosmos DB / Gremlin environment.</summary>
 public class ConnectionProfile

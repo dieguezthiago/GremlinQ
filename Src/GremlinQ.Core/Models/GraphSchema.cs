@@ -1,6 +1,6 @@
-namespace GremlinQ.Models;
+namespace GremlinQ.Core.Models;
 
 /// <summary>Snapshot of the full graph schema: all vertex types and relationship triples.</summary>
 public sealed record GraphSchema(
-    IReadOnlyList<GraphNode> Nodes,
+    IReadOnlyList<VertexItem> Nodes,
     IReadOnlyList<GraphSchemaEdge> Edges);

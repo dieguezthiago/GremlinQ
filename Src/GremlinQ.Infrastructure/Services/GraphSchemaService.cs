@@ -1,8 +1,8 @@
 using System.Text.Json;
-using GremlinQ.Models;
-using GremlinQ.Services.Interfaces;
+using GremlinQ.Core.Models;
+using GremlinQ.Core.Services;
 
-namespace GremlinQ.Services;
+namespace GremlinQ.Infrastructure.Services;
 
 /// <summary>
 ///     Queries the Gremlin server for schema-level information: vertex types, edge types,
@@ -99,7 +99,7 @@ public sealed class GraphSchemaService : IGraphSchemaService
 
         var nodes = nodeSet
             .OrderBy(s => s)
-            .Select(label => new GraphNode(label))
+            .Select(label => new VertexItem(label))
             .ToList();
 
         return new GraphSchema(nodes, edges);

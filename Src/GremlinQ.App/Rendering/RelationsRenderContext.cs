@@ -1,4 +1,4 @@
-using GremlinQ.Models;
+using GremlinQ.Core.Models;
 
 namespace GremlinQ.Rendering;
 

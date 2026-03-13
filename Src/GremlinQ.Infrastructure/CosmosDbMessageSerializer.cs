@@ -3,7 +3,7 @@ using Gremlin.Net.Driver;
 using Gremlin.Net.Driver.Messages;
 using Gremlin.Net.Structure.IO.GraphSON;
 
-namespace GremlinQ;
+namespace GremlinQ.Infrastructure;
 
 /// <summary>
 ///     A message serializer that uses the standard <see cref="GraphSON2MessageSerializer" /> for
