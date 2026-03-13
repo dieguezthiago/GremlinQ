@@ -20,4 +20,9 @@
         </Content>
     </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\GremlinQ.Core\GremlinQ.Core.csproj" />
+        <ProjectReference Include="..\GremlinQ.Infrastructure\GremlinQ.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/GremlinQ.Core.Tests/GremlinQ.Core.Tests.csproj" />
+    <Project Path="Tests/GremlinQ.Infrastructure.Tests/GremlinQ.Infrastructure.Tests.csproj" />
+  </Folder>
+  <Project Path="Src/GremlinQ.Core/GremlinQ.Core.csproj" />
+  <Project Path="Src/GremlinQ.App/GremlinQ.App.csproj" />
+  <Project Path="Src/GremlinQ.Infrastructure/GremlinQ.Infrastructure.csproj" />
+</Solution>
