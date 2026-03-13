@@ -4,6 +4,9 @@
     <Project Path="Tests/GremlinQ.Infrastructure.Tests/GremlinQ.Infrastructure.Tests.csproj" />
   </Folder>
   <Project Path="Src/GremlinQ.Core/GremlinQ.Core.csproj" />
+  <Folder Name="/_Solution Items/">
+    <File Path="CLAUDE.md" />
+  </Folder>
   <Project Path="Src/GremlinQ.App/GremlinQ.App.csproj" />
   <Project Path="Src/GremlinQ.Infrastructure/GremlinQ.Infrastructure.csproj" />
 </Solution>
