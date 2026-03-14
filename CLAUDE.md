@@ -28,7 +28,7 @@ Src/
   GremlinQ.Core/             — domain models + service interfaces (no dependencies)
     Models/                  — ConnectionProfile, GraphSchema, GraphSchemaEdge, VertexItem,
                                EdgeLabelItem, QueryResult, HistoryEntry
-    Services/                — IGremlinConnectionService, IGremlinQueryService,
+    Abstractions/            — IGremlinConnectionService, IGremlinQueryService,
                                IGraphSchemaService, IConnectionProfileRepository, IQueryHistoryManager
   GremlinQ.Infrastructure/   — service implementations + Gremlin client wrappers (depends on Core)
     Services/                — GremlinConnectionService, GremlinQueryService, GraphSchemaService,

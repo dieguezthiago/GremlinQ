@@ -1,7 +1,7 @@
+using GremlinQ.App.Models;
 using GremlinQ.Core.Models;
-using GremlinQ.Models;
 
-namespace GremlinQ.Layout;
+namespace GremlinQ.App.Layout;
 
 /// <summary>
 ///     Places graph nodes using a force-directed simulation:

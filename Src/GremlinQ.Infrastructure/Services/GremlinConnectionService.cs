@@ -1,6 +1,6 @@
 using Gremlin.Net.Driver;
+using GremlinQ.Core.Abstractions;
 using GremlinQ.Core.Models;
-using GremlinQ.Core.Services;
 
 namespace GremlinQ.Infrastructure.Services;
 

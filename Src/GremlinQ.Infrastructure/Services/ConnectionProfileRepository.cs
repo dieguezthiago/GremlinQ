@@ -1,7 +1,7 @@
 using System.IO;
 using System.Text.Json;
+using GremlinQ.Core.Abstractions;
 using GremlinQ.Core.Models;
-using GremlinQ.Core.Services;
 
 namespace GremlinQ.Infrastructure.Services;
 

@@ -2,7 +2,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using GremlinQ.Core.Models;
 
-namespace GremlinQ.Rendering;
+namespace GremlinQ.App.Rendering;
 
 /// <summary>
 ///     Renders the Relations tab mini-graph: source vertex in the centre,

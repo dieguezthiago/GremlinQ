@@ -1,4 +1,4 @@
-namespace GremlinQ.Models;
+namespace GremlinQ.App.Models;
 
 /// <summary>Mutable node whose position is updated by the force layout and interactive dragging.</summary>
 public sealed class GraphNode(string label)

@@ -6,7 +6,7 @@ using System.Windows.Shapes;
 using GremlinQ.Core.Models;
 using WpfPath = System.Windows.Shapes.Path;
 
-namespace GremlinQ.Rendering;
+namespace GremlinQ.App.Rendering;
 
 /// <summary>
 ///     Low-level WPF drawing primitives (edges, self-loops, nodes) shared by both canvas renderers.

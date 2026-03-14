@@ -1,9 +1,9 @@
 using System.Windows.Controls;
 using System.Windows.Media;
+using GremlinQ.App.Models;
 using GremlinQ.Core.Models;
-using GremlinQ.Models;
 
-namespace GremlinQ.Rendering;
+namespace GremlinQ.App.Rendering;
 
 /// <summary>Renders the force-directed schema graph onto the Graph tab canvas.</summary>
 public sealed class GraphCanvasRenderer

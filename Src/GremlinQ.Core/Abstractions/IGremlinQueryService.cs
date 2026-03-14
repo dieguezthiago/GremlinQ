@@ -1,6 +1,6 @@
 using GremlinQ.Core.Models;
 
-namespace GremlinQ.Core.Services;
+namespace GremlinQ.Core.Abstractions;
 
 public interface IGremlinQueryService
 {

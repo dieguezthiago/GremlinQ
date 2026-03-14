@@ -1,12 +1,12 @@
 using System.Windows;
-using GremlinQ.Core.Services;
+using GremlinQ.App.Layout;
+using GremlinQ.App.Rendering;
+using GremlinQ.App.Services;
+using GremlinQ.Core.Abstractions;
 using GremlinQ.Infrastructure.Services;
-using GremlinQ.Services;
-using GremlinQ.Layout;
-using GremlinQ.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace GremlinQ;
+namespace GremlinQ.App;
 
 public partial class App : Application
 {

@@ -1,6 +1,6 @@
 using System.Windows.Media;
 
-namespace GremlinQ.Rendering;
+namespace GremlinQ.App.Rendering;
 
 public interface IColorPalette
 {

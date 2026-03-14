@@ -3,14 +3,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using GremlinQ.App.Layout;
+using GremlinQ.App.Models;
+using GremlinQ.App.Rendering;
+using GremlinQ.Core.Abstractions;
 using GremlinQ.Core.Models;
-using GremlinQ.Core.Services;
-using GremlinQ.Layout;
-using GremlinQ.Models;
-using GremlinQ.Rendering;
 using Path = System.IO.Path;
 
-namespace GremlinQ;
+namespace GremlinQ.App;
 
 /// <summary>Interaction logic for MainWindow.xaml — UI coordination only.</summary>
 public partial class MainWindow : Window
