@@ -17,7 +17,7 @@ public sealed class GremlinConnectionService : IGremlinConnectionService, IDispo
     public bool IsConnected => _client is not null;
     public ConnectionProfile? ActiveProfile { get; private set; }
 
-    public void Connect(ConnectionProfile profile, string key)
+    public void Connect(ConnectionProfile profile)
     {
         Disconnect();
 
@@ -26,7 +26,7 @@ public sealed class GremlinConnectionService : IGremlinConnectionService, IDispo
             profile.Port,
             profile.EnableSsl,
             $"/dbs/{profile.Database}/colls/{profile.Collection}",
-            key);
+            profile.Key);
 
         var poolSettings = new ConnectionPoolSettings
         {

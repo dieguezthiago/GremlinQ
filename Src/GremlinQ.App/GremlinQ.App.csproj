@@ -14,14 +14,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="connections\*.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\GremlinQ.Core\GremlinQ.Core.csproj" />
-        <ProjectReference Include="..\GremlinQ.Infrastructure\GremlinQ.Infrastructure.csproj" />
+        <ProjectReference Include="..\GremlinQ.Core\GremlinQ.Core.csproj"/>
+        <ProjectReference Include="..\GremlinQ.Infrastructure\GremlinQ.Infrastructure.csproj"/>
     </ItemGroup>
 
 </Project>

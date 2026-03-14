@@ -8,7 +8,6 @@ using GremlinQ.App.Models;
 using GremlinQ.App.Rendering;
 using GremlinQ.Core.Abstractions;
 using GremlinQ.Core.Models;
-using Path = System.IO.Path;
 
 namespace GremlinQ.App;
 
@@ -17,22 +16,22 @@ public partial class MainWindow : Window
 {
     // ── WPF command ───────────────────────────────────────────────────────────
     public static readonly RoutedCommand RunQueryCommand = new(nameof(RunQueryCommand), typeof(MainWindow));
-    private static readonly JsonSerializerOptions _prettyJson = new() { WriteIndented = true };
+    private static readonly JsonSerializerOptions PrettyJson = new() { WriteIndented = true };
 
     // ── Canvas pan/zoom state ─────────────────────────────────────────────────
     private readonly MatrixTransform _canvasTransform = new();
+
+    // ── Injected services ─────────────────────────────────────────────────────
+    private readonly IConnectionProfileRepository _connectionProfileRepository;
     private readonly IGremlinConnectionService _connectionService;
     private readonly List<GraphSchemaEdge> _graphEdges = [];
 
     // ── Graph tab state ───────────────────────────────────────────────────────
     private readonly List<GraphNode> _graphNodes = [];
     private readonly GraphCanvasRenderer _graphRenderer;
-    private readonly IQueryHistoryManager _historyManager;
 
     private readonly ForceDirectedLayoutEngine _layoutEngine;
-
-    // ── Injected services ─────────────────────────────────────────────────────
-    private readonly IConnectionProfileRepository _profileRepository;
+    private readonly IQueryHistoryManager _queryHistoryManager;
     private readonly IGremlinQueryService _queryService;
     private readonly List<GraphSchemaEdge> _relationsGraphEdges = [];
     private readonly RelationsCanvasRenderer _relationsRenderer;
@@ -51,20 +50,20 @@ public partial class MainWindow : Window
     // ─────────────────────────────────────────────────────────────────────────
 
     public MainWindow(
-        IConnectionProfileRepository profileRepository,
+        IConnectionProfileRepository connectionProfileRepository,
         IGremlinConnectionService connectionService,
         IGremlinQueryService queryService,
         IGraphSchemaService schemaService,
-        IQueryHistoryManager historyManager,
+        IQueryHistoryManager queryHistoryManager,
         ForceDirectedLayoutEngine layoutEngine,
         GraphCanvasRenderer graphRenderer,
         RelationsCanvasRenderer relationsRenderer)
     {
-        _profileRepository = profileRepository;
+        _connectionProfileRepository = connectionProfileRepository;
         _connectionService = connectionService;
         _queryService = queryService;
         _schemaService = schemaService;
-        _historyManager = historyManager;
+        _queryHistoryManager = queryHistoryManager;
         _layoutEngine = layoutEngine;
         _graphRenderer = graphRenderer;
         _relationsRenderer = relationsRenderer;
@@ -86,10 +85,14 @@ public partial class MainWindow : Window
 
     private void MainWindow_Loaded(object sender, RoutedEventArgs e)
     {
-        var connectionsFolder = Path.Combine(AppContext.BaseDirectory, "connections");
-        var profiles = _profileRepository.Load(connectionsFolder);
+        RefreshConnectionsList();
+    }
 
+    private void RefreshConnectionsList()
+    {
+        var profiles = _connectionProfileRepository.LoadAll();
         CboEnvironment.ItemsSource = profiles;
+        TxtNoConnections.Visibility = profiles.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
 
         if (profiles.Count > 0)
             CboEnvironment.SelectedIndex = 0;
@@ -111,7 +114,57 @@ public partial class MainWindow : Window
         TxtPort.Text = profile.Port.ToString();
         TxtDatabase.Text = profile.Database;
         TxtCollection.Text = profile.Collection;
-        PwdKey.Password = profile.Key;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Connection management
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private void BtnAddConnection_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new AddEditConnectionWindow();
+        if (dialog.ShowDialog() == true && dialog.Result is not null)
+        {
+            _connectionProfileRepository.Save(dialog.Result);
+            RefreshConnectionsList();
+            CboEnvironment.SelectedItem = CboEnvironment.Items
+                .Cast<ConnectionProfile>()
+                .FirstOrDefault(p => p.Id == dialog.Result.Id);
+        }
+    }
+
+    private void BtnEditConnection_Click(object sender, RoutedEventArgs e)
+    {
+        if (CboEnvironment.SelectedItem is not ConnectionProfile selected) return;
+
+        var dialog = new AddEditConnectionWindow(selected);
+        if (dialog.ShowDialog() == true && dialog.Result is not null)
+        {
+            _connectionProfileRepository.Save(dialog.Result);
+            RefreshConnectionsList();
+            CboEnvironment.SelectedItem = CboEnvironment.Items
+                .Cast<ConnectionProfile>()
+                .FirstOrDefault(p => p.Id == dialog.Result.Id);
+        }
+    }
+
+    private void BtnDeleteConnection_Click(object sender, RoutedEventArgs e)
+    {
+        if (CboEnvironment.SelectedItem is not ConnectionProfile selected) return;
+
+        var confirm = MessageBox.Show(
+            $"Delete '{selected.Name}'?",
+            "Confirm Delete",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning);
+
+        if (confirm == MessageBoxResult.Yes)
+        {
+            _connectionService.Disconnect();
+            SetStatus(ConnectionStatus.Disconnected);
+            _connectionProfileRepository.Delete(selected.Id);
+            RefreshConnectionsList();
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -137,7 +190,7 @@ public partial class MainWindow : Window
 
         try
         {
-            _connectionService.Connect(profile, PwdKey.Password);
+            _connectionService.Connect(profile);
             SetStatus(ConnectionStatus.Connected);
             TxtStatus.Text = $"Connected to {profile.Name}";
         }
@@ -189,7 +242,7 @@ public partial class MainWindow : Window
         try
         {
             var result = await _queryService.ExecuteAsync(query);
-            TxtResults.Text = JsonSerializer.Serialize(result.Items, _prettyJson);
+            TxtResults.Text = JsonSerializer.Serialize(result.Items, PrettyJson);
             TxtStatus.Text = $"{result.Items.Count} result(s)  ·  {result.ElapsedMs} ms  ·  {result.ProfileName}";
             AddToHistory(query);
         }
@@ -284,12 +337,12 @@ public partial class MainWindow : Window
 
     private void AddToHistory(string query)
     {
-        _historyManager.Add(query);
+        _queryHistoryManager.Add(query);
 
         // Rebuild ComboBox without triggering SelectionChanged
         CboHistory.SelectionChanged -= CboHistory_SelectionChanged;
         CboHistory.ItemsSource = null;
-        CboHistory.ItemsSource = _historyManager.Items;
+        CboHistory.ItemsSource = _queryHistoryManager.Items;
         CboHistory.SelectedIndex = 0;
         CboHistory.SelectionChanged += CboHistory_SelectionChanged;
     }

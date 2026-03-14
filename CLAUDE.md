@@ -19,7 +19,8 @@ dotnet test --filter "FullyQualifiedName~TestMethodName"
 
 ## Architecture
 
-GremlinQ is a WPF desktop app (net10.0-windows) for exploring Azure Cosmos DB graph databases via Gremlin queries. It visualizes graph schema with a force-directed layout.
+GremlinQ is a WPF desktop app (net10.0-windows) for exploring Azure Cosmos DB graph databases via Gremlin queries. It
+visualizes graph schema with a force-directed layout.
 
 ### Project layout
 
@@ -49,17 +50,25 @@ Dependency rule: App → Infrastructure → Core (nothing points back up).
 ### Layer responsibilities
 
 - **Core** — domain value types and service contracts. No external dependencies.
-- **Infrastructure** — Gremlin.Net client, Cosmos DB serialization, JSON profile loading. Owns the `Gremlin.Net` NuGet reference.
-- **App** — WPF UI, DI composition root (`App.xaml.cs`), rendering, force-directed layout. All services registered as singletons.
+- **Infrastructure** — Gremlin.Net client, Cosmos DB serialization, JSON profile loading. Owns the `Gremlin.Net` NuGet
+  reference.
+- **App** — WPF UI, DI composition root (`App.xaml.cs`), rendering, force-directed layout. All services registered as
+  singletons.
 
 ### Key technical details
 
-**Azure Cosmos DB GraphSON2 quirk** — `CosmosDbMessageSerializer` is a custom `IMessageSerializer` that tolerates bare JSON numbers as vertex IDs, which the standard Gremlin.Net serializer rejects.
+**Azure Cosmos DB GraphSON2 quirk** — `CosmosDbMessageSerializer` is a custom `IMessageSerializer` that tolerates bare
+JSON numbers as vertex IDs, which the standard Gremlin.Net serializer rejects.
 
-**GraphSchema.Nodes type** — `IReadOnlyList<VertexItem>` (domain type). `MainWindow.LoadGraphAsync()` maps these to `GraphNode` instances for the layout engine.
+**GraphSchema.Nodes type** — `IReadOnlyList<VertexItem>` (domain type). `MainWindow.LoadGraphAsync()` maps these to
+`GraphNode` instances for the layout engine.
 
-**Gremlin query safety** — `VertexItem.GremlinRef` and `EdgeLabelItem.GremlinRef` escape single quotes before interpolating labels into Gremlin traversals. Always use these properties, not `Label` directly.
+**Gremlin query safety** — `VertexItem.GremlinRef` and `EdgeLabelItem.GremlinRef` escape single quotes before
+interpolating labels into Gremlin traversals. Always use these properties, not `Label` directly.
 
-**Connection profiles** — loaded from `connections/*.json` at startup. Sorted by priority: emulator → dev → staging → prod → other. Keys are stored in the JSON files; never commit real keys.
+**Connection profiles** — stored at `%APPDATA%\GremlinQ\connections.json`, encrypted at rest with Windows DPAPI (
+`DataProtectionScope.CurrentUser`). Managed from the UI via the `+` / `✎` / `✕` buttons in the connection bar. The
+`connections/` folder in the app directory is no longer used at runtime.
 
-**Canvas interactions** — left-drag moves nodes or pans, middle-drag pans, scroll wheel zooms (factor 1.12). Node hit detection uses a 130×36 rectangle.
+**Canvas interactions** — left-drag moves nodes or pans, middle-drag pans, scroll wheel zooms (factor 1.12). Node hit
+detection uses a 130×36 rectangle.

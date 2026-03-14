@@ -1,17 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Gremlin.Net" Version="3.8.0"/>
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Gremlin.Net" Version="3.8.0"/>
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.5"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\GremlinQ.Core\GremlinQ.Core.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\GremlinQ.Core\GremlinQ.Core.csproj"/>
+    </ItemGroup>
 
 </Project>

@@ -3,6 +3,9 @@ namespace GremlinQ.Core.Models;
 /// <summary>Represents the connection settings for a single Azure Cosmos DB / Gremlin environment.</summary>
 public class ConnectionProfile
 {
+    /// <summary>Unique identifier for this profile.</summary>
+    public Guid Id { get; set; } = Guid.NewGuid();
+
     /// <summary>Display name of the environment (e.g. "Development").</summary>
     public string Name { get; set; } = string.Empty;
 

@@ -1,9 +1,0 @@
-{
-  "name": "Azure Cosmos Emulator",
-  "host": "localhost",
-  "port": 8901,
-  "enableSsl": false,
-  "database": "",
-  "collection": "",
-  "key": ""
-}

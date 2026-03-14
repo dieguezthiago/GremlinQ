@@ -1,9 +1,0 @@
-{
-  "name": "Development",
-  "host": "<account>.gremlin.cosmos.azure.com",
-  "port": 443,
-  "enableSsl": true,
-  "database": "",
-  "collection": "",
-  "key": ""
-}

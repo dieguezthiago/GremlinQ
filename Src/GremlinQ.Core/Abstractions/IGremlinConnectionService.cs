@@ -7,7 +7,7 @@ public interface IGremlinConnectionService
     bool IsConnected { get; }
     ConnectionProfile? ActiveProfile { get; }
 
-    void Connect(ConnectionProfile profile, string key);
+    void Connect(ConnectionProfile profile);
     void Disconnect();
 
     /// <summary>Submits a raw Gremlin query and returns the result items.</summary>

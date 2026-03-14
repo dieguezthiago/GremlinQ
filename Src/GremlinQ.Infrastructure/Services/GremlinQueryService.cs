@@ -5,22 +5,15 @@ using GremlinQ.Core.Models;
 namespace GremlinQ.Infrastructure.Services;
 
 /// <summary>Executes Gremlin queries and returns timed, serialisable results.</summary>
-public sealed class GremlinQueryService : IGremlinQueryService
+public sealed class GremlinQueryService(IGremlinConnectionService connection) : IGremlinQueryService
 {
-    private readonly IGremlinConnectionService _connection;
-
-    public GremlinQueryService(IGremlinConnectionService connection)
-    {
-        _connection = connection;
-    }
-
     public async Task<QueryResult> ExecuteAsync(string query)
     {
         var sw = Stopwatch.StartNew();
-        var results = await _connection.SubmitAsync(query);
+        var results = await connection.SubmitAsync(query);
         sw.Stop();
 
         var items = results.Cast<object>().ToList();
-        return new QueryResult(items, sw.ElapsedMilliseconds, _connection.ActiveProfile?.Name ?? "unknown");
+        return new QueryResult(items, sw.ElapsedMilliseconds, connection.ActiveProfile?.Name ?? "unknown");
     }
 }
