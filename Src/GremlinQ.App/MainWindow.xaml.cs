@@ -42,6 +42,7 @@ public partial class MainWindow : Window
     private Point _dragOffset;
     private bool _isPanning;
     private bool _isRelationsPanning;
+    private bool _queryExpanded = true;
     private Point _panStart;
     private Point _relationsPanStart;
 
@@ -209,6 +210,14 @@ public partial class MainWindow : Window
     // ─────────────────────────────────────────────────────────────────────────
     // Query execution
     // ─────────────────────────────────────────────────────────────────────────
+
+    private void BtnCollapseQuery_Click(object sender, RoutedEventArgs e)
+    {
+        _queryExpanded = !_queryExpanded;
+        QueryEditorContent.Visibility = _queryExpanded ? Visibility.Visible : Visibility.Collapsed;
+        BtnCollapseQuery.Content = _queryExpanded ? "▲" : "▼";
+        BtnCollapseQuery.ToolTip = _queryExpanded ? "Collapse query panel" : "Expand query panel";
+    }
 
     private void BtnRun_Click(object sender, RoutedEventArgs e)
     {
