@@ -105,6 +105,88 @@ public sealed class GraphSchemaService : IGraphSchemaService
         return new GraphSchema(nodes, edges);
     }
 
+    public async Task<IReadOnlyList<SchemaProperty>> LoadVertexPropertiesAsync(VertexItem vertex)
+    {
+        var results = await _connection.SubmitAsync(
+            $"g.V().hasLabel({vertex.GremlinRef}).limit(100).properties().project('k','v').by(key()).by(value())");
+        return ParseSchemaProperties(results);
+    }
+
+    public async Task<IReadOnlyList<SchemaProperty>> LoadEdgePropertiesAsync(string edgeLabel)
+    {
+        var safeLabel = edgeLabel.Replace("'", "\\'");
+        var results = await _connection.SubmitAsync(
+            $"g.E().hasLabel('{safeLabel}').limit(100).properties().project('k','v').by(key()).by(value())");
+        return ParseSchemaProperties(results);
+    }
+
+    private static IReadOnlyList<SchemaProperty> ParseSchemaProperties(IEnumerable<dynamic> results)
+    {
+        // Collect one representative value per key to infer the type.
+        var byKey = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        foreach (var r in results)
+        {
+            var el = (JsonElement)(object)r;
+            string? key = null;
+            JsonElement? valueEl = null;
+
+            // GraphSON2 g:Map → {"@type":"g:Map","@value":["k","name","v","John"]}
+            if (el.TryGetProperty("@type", out var type) && type.GetString() == "g:Map" &&
+                el.TryGetProperty("@value", out var arr) && arr.ValueKind == JsonValueKind.Array)
+            {
+                var items = arr.EnumerateArray().ToList();
+                for (var i = 0; i + 1 < items.Count; i += 2)
+                {
+                    var k = items[i].ValueKind == JsonValueKind.String ? items[i].GetString() : null;
+                    if (k == "k" && items[i + 1].ValueKind == JsonValueKind.String)
+                        key = items[i + 1].GetString();
+                    else if (k == "v")
+                        valueEl = items[i + 1];
+                }
+            }
+            else if (el.ValueKind == JsonValueKind.Object)
+            {
+                if (el.TryGetProperty("k", out var kv) && kv.ValueKind == JsonValueKind.String)
+                    key = kv.GetString();
+                if (el.TryGetProperty("v", out var vv))
+                    valueEl = vv;
+            }
+
+            if (key is not null && valueEl.HasValue && !byKey.ContainsKey(key))
+                byKey[key] = InferType(valueEl.Value);
+        }
+
+        return byKey
+            .OrderBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase)
+            .Select(kv => new SchemaProperty(kv.Key, kv.Value))
+            .ToList();
+    }
+
+    private static string InferType(JsonElement value) => value.ValueKind switch
+    {
+        JsonValueKind.String                 => "String",
+        JsonValueKind.True or
+        JsonValueKind.False                  => "Boolean",
+        JsonValueKind.Number                 => value.TryGetInt64(out _) ? "Integer" : "Float",
+        JsonValueKind.Object                 => InferGraphSonType(value),
+        _                                    => "Unknown"
+    };
+
+    private static string InferGraphSonType(JsonElement obj)
+    {
+        if (!obj.TryGetProperty("@type", out var t)) return "Unknown";
+        return t.GetString() switch
+        {
+            "g:Int32" or "g:Int64"    => "Integer",
+            "g:Float" or "g:Double"   => "Float",
+            "g:Date" or "g:Timestamp" => "Date",
+            "g:UUID"                  => "UUID",
+            { } other                 => other.StartsWith("g:") ? other[2..] : other,
+            null                      => "Unknown"
+        };
+    }
+
     // ── Parsers ───────────────────────────────────────────────────────────────
 
     private static VertexItem? ParseLabel(JsonElement el)

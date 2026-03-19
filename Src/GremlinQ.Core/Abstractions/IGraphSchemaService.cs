@@ -13,4 +13,7 @@ public interface IGraphSchemaService
 
     /// <summary>Loads the complete schema (all vertex types + all edge triples) for the Graph tab.</summary>
     Task<GraphSchema> LoadFullSchemaAsync();
+
+    Task<IReadOnlyList<SchemaProperty>> LoadVertexPropertiesAsync(VertexItem vertex);
+    Task<IReadOnlyList<SchemaProperty>> LoadEdgePropertiesAsync(string edgeLabel);
 }

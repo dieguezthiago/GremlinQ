@@ -636,6 +636,12 @@
                                 Style="{StaticResource SecondaryButton}"
                                 Click="BtnResetView_Click"
                                 Margin="0,0,10,0" />
+                        <Button x:Name="BtnResetLayout"
+                                DockPanel.Dock="Left"
+                                Content="⊗  Reset Layout"
+                                Style="{StaticResource SecondaryButton}"
+                                Click="BtnResetLayout_Click"
+                                Margin="0,0,10,0" />
                         <TextBlock x:Name="TxtGraphStatus"
                                    Foreground="#858585"
                                    FontSize="11"
@@ -663,6 +669,82 @@
             </TabItem>
 
         </TabControl>
+
+        <!-- ===== PROPERTIES POPOVER ===== -->
+        <Popup x:Name="PropertiesPopup"
+               Placement="Absolute"
+               StaysOpen="True"
+               AllowsTransparency="True"
+               PopupAnimation="Fade">
+            <StackPanel>
+
+                <!-- Upward caret pointing at the clicked item -->
+                <Polygon Points="0,9 9,0 18,9"
+                         Fill="#252526" Stroke="#555555" StrokeThickness="1"
+                         HorizontalAlignment="Center"
+                         Margin="0,0,0,-1" />
+
+                <!-- Card -->
+                <Border Background="#2D2D30" BorderBrush="#555555" BorderThickness="1"
+                        CornerRadius="4" Width="240">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Black" Opacity="0.55" BlurRadius="12" ShadowDepth="3" />
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Header -->
+                        <Border Grid.Row="0" Background="#252526" BorderBrush="#555555"
+                                BorderThickness="0,0,0,1" Padding="10,7"
+                                CornerRadius="4,4,0,0">
+                            <DockPanel>
+                                <Button DockPanel.Dock="Right" Content="✕"
+                                        Style="{StaticResource IconButton}"
+                                        Click="BtnClosePopup_Click"
+                                        Margin="6,0,0,0" />
+                                <TextBlock x:Name="TxtPopupHeader"
+                                           Foreground="#9CDCFE" FontSize="12" FontWeight="SemiBold"
+                                           VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis" />
+                            </DockPanel>
+                        </Border>
+
+                        <!-- Properties -->
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" MaxHeight="280">
+                            <StackPanel Margin="10,8,10,10">
+                                <TextBlock x:Name="TxtPopupStatus"
+                                           Foreground="#858585" FontSize="11" Margin="0,0,0,4" />
+                                <ItemsControl x:Name="LstPopupProperties">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,2">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0"
+                                                           Text="{Binding Name}"
+                                                           Foreground="#9CDCFE"
+                                                           FontFamily="Consolas" FontSize="12" />
+                                                <TextBlock Grid.Column="1"
+                                                           Text="{Binding Type}"
+                                                           Foreground="#6A9955"
+                                                           FontFamily="Consolas" FontSize="11"
+                                                           VerticalAlignment="Center"
+                                                           Margin="10,0,0,0" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </Popup>
 
     </Grid>
 </Window>

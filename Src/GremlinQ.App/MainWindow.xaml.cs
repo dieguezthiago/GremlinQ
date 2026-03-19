@@ -24,6 +24,7 @@ public partial class MainWindow : Window
     // ── Injected services ─────────────────────────────────────────────────────
     private readonly IConnectionProfileRepository _connectionProfileRepository;
     private readonly IGremlinConnectionService _connectionService;
+    private readonly IGraphLayoutRepository _layoutRepository;
     private readonly List<GraphSchemaEdge> _graphEdges = [];
 
     // ── Graph tab state ───────────────────────────────────────────────────────
@@ -40,6 +41,7 @@ public partial class MainWindow : Window
     private readonly IGraphSchemaService _schemaService;
     private GraphNode? _dragNode;
     private Point _dragOffset;
+    private Point _graphClickStart;
     private bool _isPanning;
     private bool _isRelationsPanning;
     private bool _queryExpanded = true;
@@ -56,6 +58,7 @@ public partial class MainWindow : Window
         IGremlinQueryService queryService,
         IGraphSchemaService schemaService,
         IQueryHistoryManager queryHistoryManager,
+        IGraphLayoutRepository layoutRepository,
         ForceDirectedLayoutEngine layoutEngine,
         GraphCanvasRenderer graphRenderer,
         RelationsCanvasRenderer relationsRenderer)
@@ -65,6 +68,7 @@ public partial class MainWindow : Window
         _queryService = queryService;
         _schemaService = schemaService;
         _queryHistoryManager = queryHistoryManager;
+        _layoutRepository = layoutRepository;
         _layoutEngine = layoutEngine;
         _graphRenderer = graphRenderer;
         _relationsRenderer = relationsRenderer;
@@ -507,6 +511,15 @@ public partial class MainWindow : Window
     {
         if (e.LeftButton != MouseButtonState.Pressed && e.MiddleButton != MouseButtonState.Pressed)
             return;
+
+        var el = FindTaggedElement(e.OriginalSource as DependencyObject);
+        if (el is not null)
+        {
+            _ = ShowPropertiesPopupAsync((string)el.Tag, GetElementBottomCenterScreen(el));
+            e.Handled = true;
+            return;
+        }
+
         _isRelationsPanning = true;
         _relationsPanStart = e.GetPosition(RelationsPreviewBorder);
         RelationsCanvas.CaptureMouse();
@@ -584,6 +597,22 @@ public partial class MainWindow : Window
         _canvasTransform.Matrix = Matrix.Identity;
     }
 
+    private void BtnResetLayout_Click(object sender, RoutedEventArgs e)
+    {
+        if (CboEnvironment.SelectedItem is ConnectionProfile profile)
+            _layoutRepository.Delete(profile.Id);
+        _ = LoadGraphAsync();
+    }
+
+    private void SaveLayout()
+    {
+        if (CboEnvironment.SelectedItem is not ConnectionProfile profile) return;
+        var positions = _graphNodes.ToDictionary(
+            n => n.Label,
+            n => new NodePosition(n.X, n.Y));
+        _layoutRepository.Save(profile.Id, positions);
+    }
+
     private async Task LoadGraphAsync()
     {
         if (!_connectionService.IsConnected)
@@ -611,6 +640,16 @@ public partial class MainWindow : Window
 
             _layoutEngine.PlaceNodesCircular(_graphNodes, w, h);
             _layoutEngine.RunLayout(_graphNodes, _graphEdges, w, h);
+
+            // Override positions for nodes that have been manually arranged before.
+            if (CboEnvironment.SelectedItem is ConnectionProfile layoutProfile)
+            {
+                var saved = _layoutRepository.Load(layoutProfile.Id);
+                foreach (var node in _graphNodes)
+                    if (saved.TryGetValue(node.Label, out var pos))
+                    { node.X = pos.X; node.Y = pos.Y; }
+            }
+
             _graphRenderer.Render(GraphCanvas, _graphNodes, _graphEdges);
 
             var distinctEdgeTypes = _graphEdges.Select(e => e.EdgeLabel).Distinct().Count();
@@ -649,10 +688,19 @@ public partial class MainWindow : Window
         if (_dragNode is not null)
         {
             _dragOffset = new Point(pos.X - _dragNode.X, pos.Y - _dragNode.Y);
+            _graphClickStart = pos;
             GraphCanvas.CaptureMouse();
         }
         else
         {
+            var el = FindTaggedElement(e.OriginalSource as DependencyObject);
+            if (el is not null)
+            {
+                _ = ShowPropertiesPopupAsync((string)el.Tag, GetElementBottomCenterScreen(el));
+                e.Handled = true;
+                return;
+            }
+
             _isPanning = true;
             _panStart = e.GetPosition(GraphBorder);
             GraphCanvas.CaptureMouse();
@@ -685,6 +733,15 @@ public partial class MainWindow : Window
 
     private void GraphCanvas_MouseUp(object sender, MouseButtonEventArgs e)
     {
+        if (_dragNode is not null)
+        {
+            var pos = e.GetPosition(GraphCanvas);
+            if ((pos - _graphClickStart).Length < 5.0)
+                _ = ShowPropertiesPopupAsync($"vertex:{_dragNode.Label}", GetNodeBottomCenterScreen(_dragNode));
+            else
+                SaveLayout();
+        }
+
         _dragNode = null;
         _isPanning = false;
         GraphCanvas.ReleaseMouseCapture();
@@ -704,6 +761,80 @@ public partial class MainWindow : Window
     // ─────────────────────────────────────────────────────────────────────────
     // Helpers
     // ─────────────────────────────────────────────────────────────────────────
+
+    /// <summary>Walks up the visual tree from <paramref name="source"/> to find the nearest element
+    /// tagged "vertex:…" or "edge:…". Returns the element so callers can compute its screen position.</summary>
+    private static FrameworkElement? FindTaggedElement(DependencyObject? source)
+    {
+        var el = source as FrameworkElement;
+        while (el is not null)
+        {
+            if (el.Tag is string tag &&
+                (tag.StartsWith("vertex:", StringComparison.Ordinal) ||
+                 tag.StartsWith("edge:", StringComparison.Ordinal)))
+                return el;
+            el = VisualTreeHelper.GetParent(el) as FrameworkElement;
+        }
+        return null;
+    }
+
+    /// <summary>Returns the screen coordinates of the bottom-centre of a FrameworkElement,
+    /// accounting for any RenderTransforms on ancestor canvases.</summary>
+    private Point GetElementBottomCenterScreen(FrameworkElement element)
+    {
+        var winPoint = element.TranslatePoint(new Point(element.ActualWidth / 2, element.ActualHeight), this);
+        return PointToScreen(winPoint);
+    }
+
+    /// <summary>Returns the screen coordinates of the bottom-centre of a graph node,
+    /// mapping through the GraphCanvas pan/zoom RenderTransform.</summary>
+    private Point GetNodeBottomCenterScreen(GraphNode node)
+    {
+        var canvasPoint = new Point(node.X, node.Y + CanvasDrawingHelper.NodeH / 2);
+        var winPoint = GraphCanvas.TranslatePoint(canvasPoint, this);
+        return PointToScreen(winPoint);
+    }
+
+    // Popup width (matches Width="240" on the card Border in XAML).
+    // Arrow (18px wide) is centred in 240px → tip at x=120 in popup space.
+    private const double PopupCardWidth = 240;
+
+    private async Task ShowPropertiesPopupAsync(string tag, Point itemBottomCenter)
+    {
+        var colon = tag.IndexOf(':');
+        var kind = tag[..colon];
+        var label = tag[(colon + 1)..];
+
+        TxtPopupHeader.Text = $"{(kind == "vertex" ? "Vertex" : "Edge")}  ·  {label}";
+        TxtPopupStatus.Text = _connectionService.IsConnected ? "Loading…" : "Not connected";
+        LstPopupProperties.ItemsSource = null;
+
+        // Centre the popup horizontally on the item; place it just below.
+        PropertiesPopup.HorizontalOffset = itemBottomCenter.X - PopupCardWidth / 2;
+        PropertiesPopup.VerticalOffset = itemBottomCenter.Y + 2;
+        PropertiesPopup.IsOpen = true;
+
+        if (!_connectionService.IsConnected) return;
+
+        try
+        {
+            var props = kind == "vertex"
+                ? await _schemaService.LoadVertexPropertiesAsync(new VertexItem(label))
+                : await _schemaService.LoadEdgePropertiesAsync(label);
+
+            TxtPopupStatus.Text = props.Count > 0 ? string.Empty : "(no properties)";
+            LstPopupProperties.ItemsSource = props.Count > 0 ? props : null;
+        }
+        catch
+        {
+            TxtPopupStatus.Text = "(error loading properties)";
+        }
+    }
+
+    private void BtnClosePopup_Click(object sender, RoutedEventArgs e)
+    {
+        PropertiesPopup.IsOpen = false;
+    }
 
     private void ShowError(string message)
     {

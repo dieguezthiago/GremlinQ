@@ -106,7 +106,8 @@ public sealed class CanvasDrawingHelper
             Foreground = edgeBrush,
             Background = _palette.EdgeLabelBackgroundBrush,
             FontSize = 10,
-            Padding = new Thickness(2, 0, 2, 0)
+            Padding = new Thickness(2, 0, 2, 0),
+            Tag = $"edge:{label}"
         };
         Canvas.SetLeft(txt, lx - 28);
         Canvas.SetTop(txt, ly - 8);
@@ -138,7 +139,8 @@ public sealed class CanvasDrawingHelper
             Foreground = edgeBrush,
             Background = _palette.EdgeLabelBackgroundBrush,
             FontSize = 10,
-            Padding = new Thickness(2, 0, 2, 0)
+            Padding = new Thickness(2, 0, 2, 0),
+            Tag = $"edge:{label}"
         };
         Canvas.SetLeft(txt, cx - 28);
         Canvas.SetTop(txt, cy - 68 - index * 16);
@@ -147,6 +149,16 @@ public sealed class CanvasDrawingHelper
 
     public void DrawNode(Canvas canvas, double x, double y, string label, bool isSelected = false)
     {
+        var innerText = new TextBlock
+        {
+            Text = label,
+            Foreground = _palette.NodeForegroundBrush,
+            FontSize = 12,
+            FontWeight = FontWeights.SemiBold,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            Tag = $"vertex:{label}"
+        };
         var border = new Border
         {
             Width = NodeW,
@@ -158,15 +170,8 @@ public sealed class CanvasDrawingHelper
             BorderThickness = new Thickness(isSelected ? 2.5 : 1.5),
             CornerRadius = new CornerRadius(18),
             Cursor = Cursors.SizeAll,
-            Child = new TextBlock
-            {
-                Text = label,
-                Foreground = _palette.NodeForegroundBrush,
-                FontSize = 12,
-                FontWeight = FontWeights.SemiBold,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center
-            }
+            Tag = $"vertex:{label}",
+            Child = innerText
         };
 
         Canvas.SetLeft(border, x - NodeW / 2);

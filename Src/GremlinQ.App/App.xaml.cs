@@ -22,6 +22,7 @@ public partial class App : Application
         services.AddSingleton<CanvasDrawingHelper>();
         services.AddSingleton<IGremlinConnectionService, GremlinConnectionService>();
         services.AddSingleton<IConnectionProfileRepository, ConnectionProfileRepository>();
+        services.AddSingleton<IGraphLayoutRepository, GraphLayoutRepository>();
         services.AddSingleton<IGremlinQueryService, GremlinQueryService>();
         services.AddSingleton<IGraphSchemaService, GraphSchemaService>();
         services.AddSingleton<IQueryHistoryManager, QueryHistoryManager>();
