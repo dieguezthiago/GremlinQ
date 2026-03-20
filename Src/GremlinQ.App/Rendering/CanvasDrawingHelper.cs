@@ -43,6 +43,19 @@ public sealed class CanvasDrawingHelper
 
     // ── Primitives ────────────────────────────────────────────────────────────
 
+    /// <summary>
+    ///     Distance from the node centre to its rectangular border in direction (ux, uy),
+    ///     plus a small gap so the arrowhead sits just outside the node.
+    /// </summary>
+    private static double BorderDistance(double ux, double uy)
+    {
+        const double hw = NodeW / 2 + 3;
+        const double hh = NodeH / 2 + 3;
+        var tx = Math.Abs(ux) > 0.001 ? hw / Math.Abs(ux) : double.MaxValue;
+        var ty = Math.Abs(uy) > 0.001 ? hh / Math.Abs(uy) : double.MaxValue;
+        return Math.Min(tx, ty);
+    }
+
     public void DrawEdge(Canvas canvas,
         double x1, double y1, double x2, double y2,
         string label, double curvature, SolidColorBrush edgeBrush)
@@ -57,11 +70,12 @@ public sealed class CanvasDrawingHelper
         var px = -uy;
         var py = ux; // unit perpendicular
 
-        const double margin = NodeH / 2 + 2;
+        var margin = BorderDistance(ux, uy);
         var sx = x1 + ux * margin;
         var sy = y1 + uy * margin; // start
         var ex = x2 - ux * margin;
         var ey = y2 - uy * margin; // end
+        if ((ex - sx) * ux + (ey - sy) * uy <= 0) return; // nodes overlap, nothing to draw
         var cpx = (sx + ex) / 2 + px * curvature; // bezier control
         var cpy = (sy + ey) / 2 + py * curvature;
 
