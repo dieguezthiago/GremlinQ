@@ -45,7 +45,7 @@ public partial class MainWindow : Window
     private bool _isPanning;
     private bool _isRelationsPanning;
     private bool _queryExpanded = true;
-    private double _queryPanelHeight = 200;
+    private double _queryPanelWidth = double.NaN; // NaN = use star sizing until first collapse
     private Point _panStart;
     private Point _relationsPanStart;
 
@@ -222,19 +222,23 @@ public partial class MainWindow : Window
         if (_queryExpanded)
         {
             QueryEditorContent.Visibility = Visibility.Visible;
-            QueryRow.Height = new GridLength(_queryPanelHeight);
-            SplitterRow.Height = new GridLength(5);
+            TxtQueryTitle.Visibility = Visibility.Visible;
+            QueryColumn.Width = double.IsNaN(_queryPanelWidth)
+                ? new GridLength(1, GridUnitType.Star)
+                : new GridLength(_queryPanelWidth);
+            SplitterColumn.Width = new GridLength(5);
             QuerySplitter.Visibility = Visibility.Visible;
         }
         else
         {
-            _queryPanelHeight = QueryRow.ActualHeight;
+            _queryPanelWidth = QueryColumn.ActualWidth;
             QueryEditorContent.Visibility = Visibility.Collapsed;
-            QueryRow.Height = GridLength.Auto;
-            SplitterRow.Height = new GridLength(0);
+            TxtQueryTitle.Visibility = Visibility.Collapsed;
+            QueryColumn.Width = GridLength.Auto;
+            SplitterColumn.Width = new GridLength(0);
             QuerySplitter.Visibility = Visibility.Collapsed;
         }
-        BtnCollapseQuery.Content = _queryExpanded ? "▲" : "▼";
+        BtnCollapseQuery.Content = _queryExpanded ? "◄" : "►";
         BtnCollapseQuery.ToolTip = _queryExpanded ? "Collapse query panel" : "Expand query panel";
     }
 

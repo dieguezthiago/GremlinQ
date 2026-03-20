@@ -186,8 +186,6 @@
     <Grid x:Name="MainGrid" Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition x:Name="QueryRow" Height="200" MinHeight="80" />
-            <RowDefinition x:Name="SplitterRow" Height="5" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -290,133 +288,134 @@
             </Grid>
         </Border>
 
-        <!-- ===== QUERY EDITOR ===== -->
-        <Border Grid.Row="1"
-                Margin="0,8,0,0"
-                BorderBrush="#3C3C3C"
-                BorderThickness="1">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
+        <!-- ===== CONTENT AREA (Query left + Results right) ===== -->
+        <Grid Grid.Row="1" Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="QueryColumn" Width="1*" MinWidth="28" />
+                <ColumnDefinition x:Name="SplitterColumn" Width="5" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
 
-                <!-- Panel header with collapse toggle -->
-                <Border Grid.Row="0"
-                        Background="#252526"
-                        BorderBrush="#3C3C3C"
-                        BorderThickness="0,0,0,1"
-                        Padding="8,5">
-                    <DockPanel>
-                        <Button x:Name="BtnCollapseQuery"
-                                DockPanel.Dock="Right"
-                                Content="▲"
-                                Style="{StaticResource IconButton}"
-                                Click="BtnCollapseQuery_Click"
-                                ToolTip="Collapse query panel" />
-                        <TextBlock Text="Gremlin Query"
-                                   Foreground="#9CDCFE"
-                                   VerticalAlignment="Center"
-                                   FontSize="12" />
-                    </DockPanel>
-                </Border>
-
-                <!-- Collapsible content -->
-                <Grid x:Name="QueryEditorContent" Grid.Row="1" Margin="6">
+            <!-- ===== QUERY EDITOR ===== -->
+            <Border Grid.Column="0"
+                    BorderBrush="#3C3C3C"
+                    BorderThickness="1">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <!-- Shortcuts + History row -->
-                    <DockPanel Grid.Row="0" Margin="0,0,0,5" LastChildFill="True">
+                    <!-- Panel header with collapse toggle -->
+                    <Border Grid.Row="0"
+                            Background="#252526"
+                            BorderBrush="#3C3C3C"
+                            BorderThickness="0,0,0,1"
+                            Padding="8,5">
+                        <DockPanel>
+                            <Button x:Name="BtnCollapseQuery"
+                                    DockPanel.Dock="Right"
+                                    Content="◄"
+                                    Style="{StaticResource IconButton}"
+                                    Click="BtnCollapseQuery_Click"
+                                    ToolTip="Collapse query panel" />
+                            <TextBlock x:Name="TxtQueryTitle"
+                                       Text="Gremlin Query"
+                                       Foreground="#9CDCFE"
+                                       VerticalAlignment="Center"
+                                       FontSize="12" />
+                        </DockPanel>
+                    </Border>
 
-                        <!-- Shortcuts (left) -->
-                        <TextBlock DockPanel.Dock="Left"
-                                   Text="Shortcuts:"
-                                   Style="{StaticResource FieldLabelCaption}"
-                                   Margin="0,0,8,0" />
-                        <Button DockPanel.Dock="Left"
-                                Content="List Vertices"
-                                Style="{StaticResource SecondaryButton}"
-                                Click="BtnShortcutListVertices_Click"
-                                Margin="0,0,4,0" />
-                        <Button DockPanel.Dock="Left"
-                                Content="List Edges"
-                                Style="{StaticResource SecondaryButton}"
-                                Click="BtnShortcutListEdges_Click"
-                                Margin="0,0,16,0" />
+                    <!-- Collapsible content -->
+                    <Grid x:Name="QueryEditorContent" Grid.Row="1" Margin="6">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                        <!-- History (right, fills remaining space) -->
-                        <TextBlock DockPanel.Dock="Left"
-                                   Text="History:"
-                                   Style="{StaticResource FieldLabelCaption}"
-                                   Margin="0,0,6,0" />
-                        <ComboBox x:Name="CboHistory"
-                                  Style="{StaticResource DarkComboBox}"
-                                  Foreground="Black"
-                                  FontFamily="Consolas"
-                                  FontSize="12"
-                                  VerticalAlignment="Center"
-                                  SelectionChanged="CboHistory_SelectionChanged"
-                                  IsEditable="False" />
-                    </DockPanel>
+                        <!-- Shortcuts + History row -->
+                        <DockPanel Grid.Row="0" Margin="0,0,0,5" LastChildFill="True">
 
-                    <TextBox x:Name="TxtQuery"
-                             Grid.Row="1"
-                             Style="{StaticResource DarkTextBox}"
-                             FontFamily="Consolas"
-                             FontSize="13"
-                             AcceptsReturn="True"
-                             AcceptsTab="True"
-                             VerticalScrollBarVisibility="Auto"
-                             HorizontalScrollBarVisibility="Auto"
-                             TextWrapping="NoWrap"
-                             Text="g.V().limit(10)"
-                             KeyDown="TxtQuery_KeyDown" />
+                            <!-- Shortcuts (left) -->
+                            <TextBlock DockPanel.Dock="Left"
+                                       Text="Shortcuts:"
+                                       Style="{StaticResource FieldLabelCaption}"
+                                       Margin="0,0,8,0" />
+                            <Button DockPanel.Dock="Left"
+                                    Content="List Vertices"
+                                    Style="{StaticResource SecondaryButton}"
+                                    Click="BtnShortcutListVertices_Click"
+                                    Margin="0,0,4,0" />
+                            <Button DockPanel.Dock="Left"
+                                    Content="List Edges"
+                                    Style="{StaticResource SecondaryButton}"
+                                    Click="BtnShortcutListEdges_Click"
+                                    Margin="0,0,16,0" />
 
-                    <StackPanel Grid.Row="2"
-                                Orientation="Horizontal"
-                                HorizontalAlignment="Left"
-                                Margin="0,6,0,0">
-                        <Button x:Name="BtnRun"
-                                Content="&#x25B6;  Run (F5)"
-                                Style="{StaticResource RunButton}"
-                                Click="BtnRun_Click"
-                                Margin="0,0,6,0" />
-                        <Button Content="Clear Results"
-                                Style="{StaticResource SecondaryButton}"
-                                Click="BtnClearResults_Click"
-                                Margin="0,0,6,0" />
-                        <Button Content="Clear Query"
-                                Style="{StaticResource SecondaryButton}"
-                                Click="BtnClearQuery_Click" />
-                    </StackPanel>
+                            <!-- History (right, fills remaining space) -->
+                            <TextBlock DockPanel.Dock="Left"
+                                       Text="History:"
+                                       Style="{StaticResource FieldLabelCaption}"
+                                       Margin="0,0,6,0" />
+                            <ComboBox x:Name="CboHistory"
+                                      Style="{StaticResource DarkComboBox}"
+                                      Foreground="Black"
+                                      FontFamily="Consolas"
+                                      FontSize="12"
+                                      VerticalAlignment="Center"
+                                      SelectionChanged="CboHistory_SelectionChanged"
+                                      IsEditable="False" />
+                        </DockPanel>
+
+                        <TextBox x:Name="TxtQuery"
+                                 Grid.Row="1"
+                                 Style="{StaticResource DarkTextBox}"
+                                 FontFamily="Consolas"
+                                 FontSize="13"
+                                 AcceptsReturn="True"
+                                 AcceptsTab="True"
+                                 VerticalScrollBarVisibility="Auto"
+                                 HorizontalScrollBarVisibility="Auto"
+                                 TextWrapping="NoWrap"
+                                 Text="g.V().limit(10)"
+                                 KeyDown="TxtQuery_KeyDown" />
+
+                        <StackPanel Grid.Row="2"
+                                    Orientation="Horizontal"
+                                    HorizontalAlignment="Left"
+                                    Margin="0,6,0,0">
+                            <Button x:Name="BtnRun"
+                                    Content="&#x25B6;  Run (F5)"
+                                    Style="{StaticResource RunButton}"
+                                    Click="BtnRun_Click"
+                                    Margin="0,0,6,0" />
+                            <Button Content="Clear Results"
+                                    Style="{StaticResource SecondaryButton}"
+                                    Click="BtnClearResults_Click"
+                                    Margin="0,0,6,0" />
+                            <Button Content="Clear Query"
+                                    Style="{StaticResource SecondaryButton}"
+                                    Click="BtnClearQuery_Click" />
+                        </StackPanel>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </Border>
+            </Border>
 
-        <!-- ===== QUERY / RESULTS SPLITTER ===== -->
-        <GridSplitter x:Name="QuerySplitter"
-                      Grid.Row="2"
-                      Height="5"
-                      HorizontalAlignment="Stretch"
-                      Background="#3C3C3C"
-                      ResizeDirection="Rows"
-                      ResizeBehavior="PreviousAndNext"
-                      Cursor="SizeNS" />
+            <!-- ===== QUERY / RESULTS SPLITTER ===== -->
+            <GridSplitter x:Name="QuerySplitter"
+                          Grid.Column="1"
+                          Width="5"
+                          VerticalAlignment="Stretch"
+                          HorizontalAlignment="Stretch"
+                          Background="#3C3C3C"
+                          ResizeDirection="Columns"
+                          ResizeBehavior="PreviousAndNext"
+                          Cursor="SizeWE" />
 
-        <!-- ===== SHARED STATUS BAR ===== -->
-        <TextBlock x:Name="TxtStatus"
-                   Grid.Row="4"
-                   Foreground="#858585"
-                   FontSize="11"
-                   Margin="0,4,0,0"
-                   Text="Ready" />
-
-        <!-- ===== RESULTS + RELATIONS TABS ===== -->
-        <TabControl Grid.Row="3" Margin="0,8,0,0"
+            <!-- ===== RESULTS + RELATIONS TABS ===== -->
+            <TabControl Grid.Column="2"
                     Background="#1E1E1E"
                     BorderBrush="#3C3C3C"
                     BorderThickness="1">
@@ -680,6 +679,16 @@
             </TabItem>
 
         </TabControl>
+
+        </Grid><!-- end content area -->
+
+        <!-- ===== SHARED STATUS BAR ===== -->
+        <TextBlock x:Name="TxtStatus"
+                   Grid.Row="2"
+                   Foreground="#858585"
+                   FontSize="11"
+                   Margin="0,4,0,0"
+                   Text="Ready" />
 
         <!-- ===== PROPERTIES POPOVER ===== -->
         <Popup x:Name="PropertiesPopup"
