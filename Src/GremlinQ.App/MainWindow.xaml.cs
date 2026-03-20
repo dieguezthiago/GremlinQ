@@ -45,6 +45,7 @@ public partial class MainWindow : Window
     private bool _isPanning;
     private bool _isRelationsPanning;
     private bool _queryExpanded = true;
+    private double _queryPanelHeight = 200;
     private Point _panStart;
     private Point _relationsPanStart;
 
@@ -218,7 +219,21 @@ public partial class MainWindow : Window
     private void BtnCollapseQuery_Click(object sender, RoutedEventArgs e)
     {
         _queryExpanded = !_queryExpanded;
-        QueryEditorContent.Visibility = _queryExpanded ? Visibility.Visible : Visibility.Collapsed;
+        if (_queryExpanded)
+        {
+            QueryEditorContent.Visibility = Visibility.Visible;
+            QueryRow.Height = new GridLength(_queryPanelHeight);
+            SplitterRow.Height = new GridLength(5);
+            QuerySplitter.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            _queryPanelHeight = QueryRow.ActualHeight;
+            QueryEditorContent.Visibility = Visibility.Collapsed;
+            QueryRow.Height = GridLength.Auto;
+            SplitterRow.Height = new GridLength(0);
+            QuerySplitter.Visibility = Visibility.Collapsed;
+        }
         BtnCollapseQuery.Content = _queryExpanded ? "▲" : "▼";
         BtnCollapseQuery.ToolTip = _queryExpanded ? "Collapse query panel" : "Expand query panel";
     }
