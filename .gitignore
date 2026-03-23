@@ -10,6 +10,7 @@
 .idea/
 **/.idea/
 settings.local.json
+*.sln.DotSettings.user
 
 # Build results
 [Dd]ebug/
