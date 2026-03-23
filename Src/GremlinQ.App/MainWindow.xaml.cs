@@ -43,6 +43,7 @@ public partial class MainWindow : Window
     private Point _dragOffset;
     private Point _graphClickStart;
     private bool _isPanning;
+    private FrameworkElement? _pendingTaggedElement;
     private bool _isRelationsPanning;
     private bool _queryExpanded = true;
     private double _queryPanelWidth = double.NaN; // NaN = use star sizing until first collapse
@@ -712,16 +713,11 @@ public partial class MainWindow : Window
         }
         else
         {
-            var el = FindTaggedElement(e.OriginalSource as DependencyObject);
-            if (el is not null)
-            {
-                _ = ShowPropertiesPopupAsync((string)el.Tag, GetElementBottomCenterScreen(el));
-                e.Handled = true;
-                return;
-            }
-
+            // Always start pan; defer popup to MouseUp so drag is never blocked
+            _pendingTaggedElement = FindTaggedElement(e.OriginalSource as DependencyObject);
             _isPanning = true;
             _panStart = e.GetPosition(GraphBorder);
+            _graphClickStart = _panStart;
             GraphCanvas.CaptureMouse();
         }
 
@@ -760,8 +756,16 @@ public partial class MainWindow : Window
             else
                 SaveLayout();
         }
+        else if (_pendingTaggedElement is not null)
+        {
+            var endPos = e.GetPosition(GraphBorder);
+            if ((endPos - _graphClickStart).Length < 5.0)
+                _ = ShowPropertiesPopupAsync((string)_pendingTaggedElement.Tag,
+                    GetElementBottomCenterScreen(_pendingTaggedElement));
+        }
 
         _dragNode = null;
+        _pendingTaggedElement = null;
         _isPanning = false;
         GraphCanvas.ReleaseMouseCapture();
     }
@@ -770,7 +774,9 @@ public partial class MainWindow : Window
     {
         const double factor = 1.12;
         var scale = e.Delta > 0 ? factor : 1.0 / factor;
-        var pos = e.GetPosition(GraphBorder);
+        // ScaleAt center must be in canvas-local space (the transform's input space).
+        // GetPosition(GraphCanvas) correctly maps screen coords to that space.
+        var pos = e.GetPosition(GraphCanvas);
         var m = _canvasTransform.Matrix;
         m.ScaleAt(scale, scale, pos.X, pos.Y);
         _canvasTransform.Matrix = m;
